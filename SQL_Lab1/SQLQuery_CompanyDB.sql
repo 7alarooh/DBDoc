@@ -66,6 +66,68 @@ where SSN =102660
 
 -----
 --⦁	Joins
+--⦁	Display the Department id, name and id and the name of its manager.
+SELECT d.Dnum, d.Dname, d.MGRSSN, e.Fname+' '+ e.Lname as [full name]
+FROM Departments d INNER JOIN
+     Employee e ON d.MGRSSN =  e.SSN 
+
+-- ⦁	Display the name of the departments and the name of 
+-- the projects under its control
+
+SELECT  d.Dname, p.Pname
+FROM Departments d INNER JOIN
+     Project p ON d.Dnum=p.Dnum
+
+--⦁	Display the full data about all the dependence 
+-- associated with the name of the employee they depend on him/her.
+SELECT d.*, e.Fname+' '+ e.Lname as [Employee Name]
+FROM            Employee e INNER JOIN
+                Dependent d ON e.SSN = d.ESSN
+
+--⦁	Display the Id, name and location of the projects in Cairo 
+-- or Alex city.
+SELECT Pnumber,Pname, Plocation 
+FROM Project
+where city ='Cairo' OR city ='Alex'
+
+--⦁	Display the Projects full data of the projects with 
+-- a name starts with "a" letter.
+SELECT *
+FROM Project
+where Pname LIKE'a%' 
+
+--⦁	display all the employees in department 30 whose 
+-- salary from 1000 to 2000 LE monthly
+select *
+from Employee
+where Dno=30 AND Salary between  1000 and 2000
+
+--⦁	Retrieve the names of all employees in department 10 
+-- who works more than or equal10 hours per week 
+-- on "AL Rabwah" project.
+SELECT e.Fname+' '+ e.Lname as [Employee Name]
+FROM Employee e ,
+     Works_for w ,
+	 Project p
+	 WHERE e.SSN = w.ESSn AND w.Pno=p.Pnumber AND e.Dno=10 AND p.Pname='AL Rabwah'
+	       AND w.Hours > 9
+
+--⦁	Find the names of the employees who directly supervised
+-- with Kamel Mohamed.
+select e.Fname+' '+ e.Lname as [Employee Name]
+from Employee e join Employee s on e.Superssn=s.SSN
+where s.Fname='Kamel' AND s.Lname='Mohamed'
+
+--⦁	Retrieve the names of all employees and 
+-- the names of the projects they are working on,
+-- sorted by the project name.
+select e.Fname+' '+ e.Lname as [Employee Name], p.Pname
+from Employee e
+join Works_for w on e.SSN = w.ESSn
+join Project p on w.Pno = p.Dnum
+order by p.Pname
+
+
 
 
 
