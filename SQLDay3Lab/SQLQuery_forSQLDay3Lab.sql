@@ -94,8 +94,85 @@ where salary = (select max(salary)
 --[9] Get the full name of employees that is similar to any dependent name
 select  e.Fname+' '+ e.Lname AS FullName
 from  employee e
-where  e.Fname + ' ' + e.Lname in ( select  d.Dependent_name
-                                    from dependent d)
+where  e.Fname + ' ' + e.Lname = ( select  d.Dependent_name
+                                    from dependent d 
+									where d.Dependent_name like e.Fname + ' ' + e.Lname+'%')
+
+--[10] Display the employee number and name if at least one of them 
+-- have dependents (use exists keyword) self-search
+select SSN, Fname+' '+Lname as [Full Name]
+from Employee
+where SSN in (select ESSN
+              from Dependent)
+
+-- [11] In the department table insert new department 
+-- called "DEPT IT" , with id 100, employee with 
+-- SSN = 112233 as a manager for this department.
+-- The start date for this manager is '1-11-2006'
+insert into Departments (Dnum,Dname,MGRSSN,[MGRStart Date])
+       values(100,'DEPT IT',112233,'01-11-2006')
+
+-- [12] Do what is required if you know that : Mrs.Noha 
+-- Mohamed(SSN=968574)  moved to be the manager of the 
+-- new department (id = 100), and they give you(your SSN =102672) 
+-- her position (Dept. 20 manager) 
+----------First try to update her record in the department table
+----------Update your record to be department 20 manager.
+----------Update the data of employee number=102660 to be 
+------------in your teamwork (he will be supervised by you)
+------------(your SSN =102672)
+
+update Departments
+set MGRSSN = 968574
+where Dnum=100;
+
+update Departments
+set MGRSSN = 102672
+where Dnum=20;
+
+update Employee
+set Superssn = 102672
+where SSN=102660;
+
+-- [13] Unfortunately the company ended the contract with 
+-- Mr. Kamel Mohamed (SSN=223344) so try to delete his data 
+-- from your database in case you know that you will be temporarily 
+-- in his position.
+--    Hint: (Check if Mr. Kamel has dependents, works as a 
+--    department manager, supervises any employees or works 
+--    in any projects and handle these cases).
+delete from Dependent
+where ESSN=223344;
+
+update Departments
+set MGRSSN=102672
+where MGRSSN=223344
+
+update Employee
+set Superssn=102672
+where Superssn=223344
+
+update Works_for
+set ESSn=102672
+where ESSn=223344
+
+delete from Employee
+where SSN= 223344
+
+-- [14] Try to update all salaries of employees who work 
+-- in Project ‘Al Rabwah’ by 30%
+update Employee
+set Salary=Salary*1.30
+where SSN in (select ESSn
+               from Works_for 
+			   where pno=(select Pnumber
+			              from Project 
+						  where Pname='Al Rabwah'))
+
+
+
+
+
 
 
 
