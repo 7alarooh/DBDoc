@@ -140,12 +140,31 @@ drop function GetStudentNames
 
 select * from Student
 
--- 7. Create a cursor for Employee table that increases 
--- Employee salary by 10% if Salary <3000 
+-- 7. Create a cursor for Employee table that increases  Employee salary by 10% if Salary <3000 
 -- and increases it by 20% if Salary >=3000. Use company DB
 
 
-
+declare c1 Cursor
+for select salary
+	from Instructor
+for update
+declare @sal int
+open c1
+fetch c1 into @sal
+while @@fetch_status=0
+	begin
+		if @sal>=3000--> check salary 
+			update instructor
+				set salary=@sal*1.20
+			where current of c1
+		else
+			update Instructor
+				set Salary=@sal*1.10
+			where current of c1
+		fetch c1 into @sal
+	end
+close c1
+deallocate c1
 
 -- 8. Display Department name with its manager name using cursor.  
 
@@ -176,3 +195,20 @@ DEALLOCATE DeptCursor;
 
 -- 9. Try to display all instructor names in one cell 
 -- separated by comma. Using Cursor 
+declare c1 cursor
+for select distinct St_Fname
+	from Student
+	where st_fname is not null
+for read only
+
+declare @name varchar(20),@all_names varchar(300)='' --> initial value
+open c1
+fetch c1 into @name
+while @@FETCH_STATUS=0
+	begin
+		set @all_names=concat(@all_names,',',@name)
+		fetch c1 into @name   --Next Row 
+	end
+select @all_names
+close c1
+deallocate C1
