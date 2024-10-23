@@ -139,3 +139,40 @@ select * from GetStudentNames('full name')
 drop function GetStudentNames
 
 select * from Student
+
+-- 7. Create a cursor for Employee table that increases 
+-- Employee salary by 10% if Salary <3000 
+-- and increases it by 20% if Salary >=3000. Use company DB
+
+
+
+
+-- 8. Display Department name with its manager name using cursor.  
+
+DECLARE @DeptName NVARCHAR(100), @ManagerName NVARCHAR(100);
+
+DECLARE DeptCursor CURSOR FOR
+SELECT D.Dept_Name, I.Ins_Name
+FROM Department D
+JOIN Instructor I ON D.Dept_Manager = I.Ins_Id;
+
+
+OPEN DeptCursor;
+
+
+FETCH NEXT FROM DeptCursor INTO @DeptName, @ManagerName;
+
+
+WHILE @@fetch_status = 0
+BEGIN
+  
+    PRINT 'Department: ' + @DeptName + ', Manager: ' + @ManagerName;
+
+
+    FETCH NEXT FROM DeptCursor INTO @DeptName, @ManagerName;
+END
+CLOSE DeptCursor;
+DEALLOCATE DeptCursor;
+
+-- 9. Try to display all instructor names in one cell 
+-- separated by comma. Using Cursor 
