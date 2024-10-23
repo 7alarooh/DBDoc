@@ -171,6 +171,37 @@ where SSN in (select ESSn
 
 
 
+--  Part 2:
+
+--                 Note: Use ITI DB
+
+-- [1] Create a view that displays student full name, course name 
+-- if the student has a grade more than 50. 
+
+create view Student_Course_View 
+as
+select s.St_Fname+ ' '+s.St_Lname as Full_Name, c.Crs_Name as Course_Name
+from Student s
+join stud_Course sc on s.St_Id = sc.St_Id   
+join Course c on sc.Crs_Id = c.Crs_Id       
+where sc.Grade > 50;     
+
+-- [2]  Create an Encrypted view that displays manager 
+-- names and the topics they teach. 
+
+create view Encrypted_Manager_Topic_View
+as
+select d.Dept_Manager as Manager_Name,
+    (select t.Top_Name
+     from Course c
+     JOIN Topic t on c.Top_Id = t.Top_Id
+     JOIN Ins_course ic on c.Crs_Id = ic.Crs_Id
+     where ic.Ins_Id IN ( select i.Ins_Id
+	                      from Instructor i
+                          where i.Dept_Id = d.Dept_Id
+     )) as Topic_Name
+from Department d
+where d.Dept_Manager IS NOT NULL;
 
 
 
