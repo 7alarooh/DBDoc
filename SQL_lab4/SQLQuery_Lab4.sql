@@ -106,3 +106,36 @@ select * from getManagerDetail(15)
 --drop function getManagerDetail
 
 select * from Department
+
+--6. Create multi-statements table-valued function that takes a string 
+--   If string='first name' returns student first name 
+--   If string='last name' returns student last name  
+--   If string='full name' returns Full Name from student table 
+-- Note: Use “ISNULL” function
+create function  GetStudentNames (@input nvarchar(50))
+returns @NamesTable table (Name nvarchar(100))
+as begin 
+    if @input = 'first name'
+    begin  insert into @NamesTable (Name)
+           select isnull(St_Fname, 'Unknown First Name')
+           from Student;
+    end
+    else if @input = 'last name'
+    begin
+        insert into  @NamesTable (Name)
+        select ISNULL(St_Lname, 'Unknown Last Name')
+        from Student;
+    end
+    else if @input = 'full name'
+    begin
+        insert into @NamesTable (Name)
+        select isnull(St_Fname, 'Unknown First Name') + ' ' + isnull(St_Lname, 'Unknown Last Name')
+        from Student;
+    end
+    return
+end
+select * from GetStudentNames('full name')
+
+drop function GetStudentNames
+
+select * from Student
