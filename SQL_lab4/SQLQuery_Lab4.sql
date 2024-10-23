@@ -88,4 +88,21 @@ select dbo.checkStudentName(14)
 --drop function checkStudentName
 
 select * from Student
-		      
+
+-- 5. Create inline function that takes integer which 
+-- represents manager ID and displays department 
+-- name, Manager Name and hiring date 
+create function getManagerDetail (@managerID int)
+returns  table
+as return (select d.Dept_Name as [Department Name],
+                  i.Ins_Name as [Manager Name],
+				  d.Manager_hiredate as[Hiring Date]
+           from Department d join Instructor i on d.Dept_Id=i.Dept_Id
+		   where d.Dept_Manager =@managerID
+		   )
+
+select * from getManagerDetail(15)
+
+--drop function getManagerDetail
+
+select * from Department
