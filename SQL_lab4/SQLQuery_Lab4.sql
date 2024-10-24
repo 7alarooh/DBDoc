@@ -14,7 +14,6 @@ return @monthName
 end
 
 select dbo.GetMonthName('2024-10-23')
-
 drop function GetMonthName
 
 -- 2.  Create a multi-statements table-valued function 
@@ -27,7 +26,6 @@ begin declare @currNum int
   while @currNum < @endNum
   begin insert into @valuesTable(value)
   values(@currNum)
-
   set @currNum=@currNum+1
 end
 return
@@ -134,7 +132,7 @@ as begin
     end
     return
 end
-select * from GetStudentNames('full name')
+select * from GetStudentNames('last name')
 
 drop function GetStudentNames
 
@@ -177,17 +175,10 @@ JOIN Instructor I ON D.Dept_Manager = I.Ins_Id;
 
 
 OPEN DeptCursor;
-
-
 FETCH NEXT FROM DeptCursor INTO @DeptName, @ManagerName;
-
-
 WHILE @@fetch_status = 0
-BEGIN
-  
+BEGIN  
     PRINT 'Department: ' + @DeptName + ', Manager: ' + @ManagerName;
-
-
     FETCH NEXT FROM DeptCursor INTO @DeptName, @ManagerName;
 END
 CLOSE DeptCursor;
