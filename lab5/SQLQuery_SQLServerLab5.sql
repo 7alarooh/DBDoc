@@ -95,4 +95,53 @@ end
 
 exec replaceEmployeeInProject @OldEmpNum = 102672, @NewEmpNum = 521634, @ProjectNum = 100;
 
+-- [4] ⦁	add column budget in project table and insert any draft values
+--      in it then Create an Audit table with the following structure 
+--      ProjectNo 	|UserName 	|ModifiedDate 	|Budget_Old 	|Budget_New 
+--      p2 	        |Dbo 	    |2008-01-31	    |95000 	        |200000 
+--    This table will be used to audit the update trials on the Budget column (Project table, Company DB)
+-- Example:
+--    If a user updated the budget column then the project number, 
+--    user name that made that update, the date of the modification 
+--    and the value of the old and the new budget will be inserted 
+--    into the Audit table
+--Note: This process will take place only if the user updated 
+--      the budget column
+
+alter table Project
+add Budget  decimal(18, 2)
+
+update Project
+set Budget = 100000 
+
+create table Audit (
+    ProjectNo int,
+    UserName  nvarchar(50),
+    ModifiedDate  datetime,
+    Budget_Old decimal(18, 2),
+    Budget_New decimal(18, 2)
+)
+
+create trigger trg_AuditBudgetUpdates
+on Project
+after update
+as 
+begin
+    set nocount on
+    -- Check if the Budget column was updated
+    if update(Budget)
+    begin
+        insert into Audit (ProjectNo, UserName, ModifiedDate, Budget_Old, Budget_New)
+        select  i.Pnumber AS ProjectNo,
+                suser_name() AS UserName,           
+                getdate() AS ModifiedDate,
+                d.Budget AS Budget_Old,
+                i.Budget AS Budget_New
+        FROM  Inserted i inner join 
+              Deleted d ON i.Pnumber = d.Pnumber
+    end
+end
+
+
+
 
