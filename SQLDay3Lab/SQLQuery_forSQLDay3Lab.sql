@@ -199,9 +199,13 @@ select d.Dept_Manager as Manager_Name,
      where ic.Ins_Id IN ( select i.Ins_Id
 	                      from Instructor i
                           where i.Dept_Id = d.Dept_Id
-     )) as Topic_Name
+                         )
+	) as Topic_Name
 from Department d
 where d.Dept_Manager IS NOT NULL;
+
+--[3] Create a view that will display Instructor Name, 
+--Department Name for the ‘SD’ or ‘Java’ Department  
 
 
 

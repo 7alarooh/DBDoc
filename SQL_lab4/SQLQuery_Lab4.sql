@@ -143,8 +143,8 @@ select * from Student
 
 
 declare c1 Cursor
-for select salary
-	from Instructor
+for select sa
+	from employee
 for update
 declare @sal int
 open c1
