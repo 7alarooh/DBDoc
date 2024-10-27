@@ -185,6 +185,89 @@ end
 insert into Employee (Fname, Lname, SSN, Bdate, Address, Sex, Salary, Superssn, Dno) 
 values ('John', 'Doe', 12352300, '1980-03-01', '123 Main St', 'f', 50000, NULL, 100)
 
+-- [7] ⦁	Create a trigger on student table after insert to add Row 
+--     in Student Audit table (Server User Name , Date, Note) where
+--     note will be “[username] Insert New Row with Key=[Key Value]
+--     in table [table name]”
+--      Server User Name		| Date  |Note 
+ use ITI
+create trigger trg_AuditStudentInsert
+on Student
+after insert
+as
+begin
+    set nocount on;
+
+    declare @UserName nvarchar(50);
+    declare @KeyValue int;  
+    declare @Note nvarchar(255);
+
+    -- Get the server username
+    set @UserName = suser_name(); 
+
+    -- Insert log for each row inserted
+    declare inserted_cursor cursor for
+    select St_Id from Inserted 
+
+    open inserted_cursor
+    fetch next from inserted_cursor into @KeyValue;
+
+    while @@FETCH_STATUS = 0
+    begin
+        set @Note = @UserName + ' Insert New Row with Key=' + CAST(@KeyValue AS NVARCHAR(10)) + ' in table [Student]';
+        
+        insert into StudentAudit (ServerUserName, Date, Note)
+        values (@UserName, GETDATE(), @Note);
+
+        fetch next from inserted_cursor into @KeyValue;
+    end
+
+    close inserted_cursor;
+    deallocate inserted_cursor
+end
+
+-- [8] Create a trigger on student table instead of delete to add Row 
+--     in Student Audit table (Server User Name, Date, Note) where note will 
+--     be“ try to delete Row with Key=[Key Value]”
+create trigger trg_AuditStudentDelete
+on Student
+ instead of delete 
+as
+begin
+    set nocount on
+
+    declare @UserName nvarchar(50)
+    declare @KeyValue int 
+    declare @Note nvarchar(255)
+
+    -- Get the server username
+    set @UserName = SUSER_NAME() 
+
+    -- Insert log for each row attempted to be deleted
+    DECLARE deleted_cursor CURSOR FOR
+    SELECT St_Id FROM Deleted 
+
+    OPEN deleted_cursor;
+    FETCH NEXT FROM deleted_cursor INTO @KeyValue;
+
+    while @@FETCH_STATUS = 0
+    begin
+        set @Note = 'Try to delete Row with Key=' + CAST(@KeyValue AS NVARCHAR(10));
+
+        INSERT INTO StudentAudit (ServerUserName, Date, Note)
+        VALUES (@UserName, GETDATE(), @Note)
+
+        FETCH NEXT FROM deleted_cursor INTO @KeyValue
+    end
+
+    close deleted_cursor;
+    deallocate deleted_cursor;
+
+     raiserror('Deletion is not allowed for the Student table.', 16, 1)
+end
+
+
+
 
 
 
