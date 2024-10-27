@@ -142,6 +142,50 @@ begin
     end
 end
 
+-- [5] ⦁	Create a trigger to prevent anyone from inserting a new record 
+--      in the Department table [ITI DB]
+-- “Print a message for user to tell him that he can’t insert 
+-- a new record in that table”
+use ITI
+
+create trigger trg_PreventInsertOnDepartment
+on Department
+instead of insert
+as
+begin
+    select 'You can’t insert a new record in the Department table'
+end
+
+insert into Department (Dept_Name, Dept_Desc) values ('Dep123', 'ITPart')
+
+alter table Department disable trigger trg_PreventInsertOnDepartment
+alter table Department enable trigger trg_PreventInsertOnDepartment
+
+-- [6] ⦁	 Create a trigger that prevents the insertion Process for Employee 
+--       table in March [Company DB].
+use Company_SD
+create trigger trg_PreventInsertInMarch
+on Employee
+instead of insert
+as
+begin
+    if month(getdate()) = 3
+    begin
+        select 'Insertion is not allowed in the Employee table during the month of March.'
+    end
+    else
+    begin
+        -- If it's not March, allow the insertion
+        insert into Employee (Fname, Lname, SSN, Bdate, Address, Sex, Salary, Superssn, Dno)
+        select Fname, Lname, SSN, Bdate, Address, Sex, Salary, Superssn, Dno
+        from Inserted
+    end
+end
+
+insert into Employee (Fname, Lname, SSN, Bdate, Address, Sex, Salary, Superssn, Dno) 
+values ('John', 'Doe', 12352300, '1980-03-01', '123 Main St', 'f', 50000, NULL, 100)
+
+
 
 
 
