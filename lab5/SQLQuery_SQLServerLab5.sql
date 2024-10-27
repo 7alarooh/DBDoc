@@ -60,3 +60,39 @@ end
 
 exec checkEmployeeCountForProjectP1;
 
+-- [3] ⦁	Create a stored procedure that will be used in case
+--      there is an old employee has left the project and a new one 
+--      become instead of him. The procedure should take 3 parameters 
+--      (old Emp. number, new Emp. number and the project number) and 
+--      it will be used to update works_on table. [Company DB]
+
+use Company_SD
+
+create procedure replaceEmployeeInProject
+    @OldEmpNum int,
+    @NewEmpNum int,
+    @ProjectNum int
+as 
+begin
+    if  exists (select 1 
+	            from Works_for 
+				where ESSN = @OldEmpNum and Pno = @ProjectNum)
+    begin
+        -- Remove the old employee from the project
+        delete from Works_for
+        where ESSN = @OldEmpNum and Pno = @ProjectNum;
+        -- Insert the new employee into the project with the same project number
+        insert into Works_for (ESSN, Pno, Hours)
+        values (@NewEmpNum, @ProjectNum, 0)  -- Defaulting hours to 0; adjust as necessary
+
+        select 'Employee has been successfully replaced in the project.'
+    end
+    else
+    begin
+        select 'The old employee was not found in the specified project.'
+    end
+end
+
+exec replaceEmployeeInProject @OldEmpNum = 102672, @NewEmpNum = 521634, @ProjectNum = 100;
+
+
