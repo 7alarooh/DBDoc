@@ -292,3 +292,42 @@ order by TABLE_SCHEMA, TABLE_NAME, ORDINAL_POSITION
 
 
 
+--  Part 3:
+
+--           Note: Restore ITI and adventureworks2012 DBs to Server
+
+
+--                              1): Use ITI DB
+--[1] Display instructor Name and Department Name 
+--    Note: display all the instructors if they are attached to a department or not
+select i.Ins_Name as InstructorName,
+       d.Dept_Name as DepartmentName
+from Instructor i left join
+     Department d on i.Dept_Id = d.Dept_Id
+
+
+--[2] Display student full name and the name of the course he is taking
+--    For only courses which have a grade  
+
+
+--[3] Display number of courses for each topic name
+
+
+--[4] Display max and min salary for instructors
+
+
+--[5] Display the Department name that contains the instructor
+--    who receives the minimum salary.
+ 
+ 
+ --[6] Select instructor name and his salary but if there is
+ --    no salary display instructor bonus keyword. “use coalesce Function” SELF Search
+
+
+--[7] Write a query to select the highest two salaries in Each
+--    Department for instructors who have salaries. “using one of Ranking Functions”
+ 
+ 
+ --[8] Write a query to select a random  student from each 
+ --    department.  “using one of Ranking Functions”
+
