@@ -301,39 +301,83 @@ order by TABLE_SCHEMA, TABLE_NAME, ORDINAL_POSITION
 --[1] Display instructor Name and Department Name 
 --    Note: display all the instructors if they are attached to a department or not
 select i.Ins_Name as InstructorName,
-       d.Dept_Name as DepartmentName
-from Instructor i left join
-     Department d on i.Dept_Id = d.Dept_Id
+      (select d.Dept_Name 
+       from Department d 
+       where d.Dept_Id = i.Dept_Id) as DepartmentName
+from Instructor i
 
 
 --[2] Display student full name and the name of the course he is taking
 --    For only courses which have a grade  
-select s.St_Fname+' '+s.St_Lname as FullName,
-    c.Crs_Name as CourseName
-from Student s join
-     stud_Course sc on s.St_Id = sc.St_Id
-    join Course c ON sc.Crs_Id = c.Crs_Id
-where sc.Grade is not null
+select 
+    (select s.St_Fname + ' ' + s.St_Lname 
+     from Student s 
+     where s.St_Id = sc.St_Id) as FullName,
+    (select c.Crs_Name 
+     from Course c 
+     where c.Crs_Id = sc.Crs_Id) as CourseName
+from  stud_Course sc
+where sc.Grade IS NOT NULL
 
 
 --[3] Display number of courses for each topic name
+select t.Top_Name AS TopicName,
+       (select COUNT(*) 
+        from Course c 
+        where c.Top_Id = t.Top_Id) as NumberOfCourses
+from Topic t
 
 
 --[4] Display max and min salary for instructors
-
+select (select max(Salary) from Instructor) as MaxSalary,
+      (select min(Salary) from Instructor) as MinSalary
 
 --[5] Display the Department name that contains the instructor
 --    who receives the minimum salary.
- 
+ select d.Dept_Name AS DepartmentName
+from Instructor i join
+     Department d on i.Dept_Id = d.Dept_Id
+where i.Salary = (select min(Salary) from Instructor)
+
  
  --[6] Select instructor name and his salary but if there is
  --    no salary display instructor bonus keyword. “use coalesce Function” SELF Search
 
+ select Ins_Name as InstructorName,
+        COALESCE(CAST(Salary AS VARCHAR), 'Bonus') AS SalaryOrBonus
+from Instructor
 
 --[7] Write a query to select the highest two salaries in Each
 --    Department for instructors who have salaries. “using one of Ranking Functions”
- 
+ select  Dept_Id,
+         Ins_Name as InstructorName,
+         Salary
+from ( select 
+        Dept_Id,
+        Ins_Name,
+        Salary,
+        row_number() over (PARTITION BY Dept_Id order by Salary desc) as SalaryRank
+       from Instructor
+      where Salary is not null
+) as RankedSalaries
+where SalaryRank <= 2
+order by Dept_Id, SalaryRank
+
  
  --[8] Write a query to select a random  student from each 
  --    department.  “using one of Ranking Functions”
+ SELECT 
+    Dept_Id,
+    St_Fname + ' ' + St_Lname AS StudentName
+FROM (
+    SELECT 
+        Dept_Id,
+        St_Fname,
+        St_Lname,
+        ROW_NUMBER() OVER (PARTITION BY Dept_Id ORDER BY NEWID()) AS RandomRank
+    FROM 
+        Student
+) AS RandomizedStudents
+WHERE 
+    RandomRank = 1;
 
