@@ -308,6 +308,12 @@ from Instructor i left join
 
 --[2] Display student full name and the name of the course he is taking
 --    For only courses which have a grade  
+select s.St_Fname+' '+s.St_Lname as FullName,
+    c.Crs_Name as CourseName
+from Student s join
+     stud_Course sc on s.St_Id = sc.St_Id
+    join Course c ON sc.Crs_Id = c.Crs_Id
+where sc.Grade is not null
 
 
 --[3] Display number of courses for each topic name
