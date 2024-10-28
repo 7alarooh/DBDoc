@@ -238,5 +238,18 @@ WHERE St_Address IN ('Alex', 'Cairo')
 
 update V1 set St_Address = 'Tanta' where St_Address = 'Alex'
 
+--[5] Create a view that will display the project name and 
+-- the number of employees work on it. “Use Company DB”
+use Company_SD
+
+create view ProjectEmployeeCount as
+select Project.Pname AS ProjectName,
+       count(Works_for.ESSN) AS EmployeeCount
+from  Project LEFT JOIN 
+      Works_for ON Project.Pnumber = Works_for.Pno
+group by Project.Pname
+
+
+SELECT * FROM ProjectEmployeeCount
 
 
