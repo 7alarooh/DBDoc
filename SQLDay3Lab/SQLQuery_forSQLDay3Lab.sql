@@ -253,3 +253,27 @@ group by Project.Pname
 SELECT * FROM ProjectEmployeeCount
 
 
+--[6] Create the following schema and transfer the following 
+--    tables to it (Self Search )
+--    Company Schema 
+--       Add  Department table and Project table 
+--Human Resource Schema
+--       Add  Employee table 
+
+-- Create Company schema
+CREATE SCHEMA Company
+
+-- Create HumanResource schema
+CREATE SCHEMA HumanResource
+
+ALTER SCHEMA Company TRANSFER dbo.Department
+ALTER SCHEMA Company TRANSFER dbo.Project
+ALTER SCHEMA HumanResource TRANSFER dbo.Employee
+
+SELECT TABLE_SCHEMA, TABLE_NAME
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_NAME IN ('Department', 'Project', 'Employee')
+
+SELECT * FROM Company.Department
+SELECT * FROM Company.Project
+SELECT * FROM HumanResource.Employee
