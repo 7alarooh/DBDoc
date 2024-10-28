@@ -206,8 +206,17 @@ where d.Dept_Manager IS NOT NULL;
 
 --[3] Create a view that will display Instructor Name, 
 --Department Name for the ‘SD’ or ‘Java’ Department  
+use ITI
 
+create view View_InstructorDepartment as
+select Instructor.Ins_Name as InstructorName,
+        Department.Dept_Name as DepartmentName
+from  Instructor join 
+    Department on Instructor.Dept_Id = Department.Dept_Id
+where Department.Dept_Name IN ('SD', 'Java')
 
+--Querying the view
+select * from View_InstructorDepartment
 
 
 
