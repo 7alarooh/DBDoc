@@ -277,3 +277,18 @@ WHERE TABLE_NAME IN ('Department', 'Project', 'Employee')
 SELECT * FROM Company.Department
 SELECT * FROM Company.Project
 SELECT * FROM HumanResource.Employee
+
+--[7] Try to generate script from DB ITI that describes
+--    all tables and views in this DB 
+-- Script to describe all tables in ITI DB
+
+select TABLE_SCHEMA, TABLE_NAME,
+       COLUMN_NAME,  DATA_TYPE,
+       CHARACTER_MAXIMUM_LENGTH AS MaxLength,
+       IS_NULLABLE
+from INFORMATION_SCHEMA.COLUMNS
+where TABLE_CATALOG = 'ITI'
+order by TABLE_SCHEMA, TABLE_NAME, ORDINAL_POSITION
+
+
+
